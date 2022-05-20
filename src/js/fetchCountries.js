@@ -6,7 +6,7 @@ export default function fetchCountries(name) {
       }
      
     return response.json()})
-  .catch(error => console.log('и это не нашли'))
+  .catch(error => console.log(error.message))
 
 }
 
