@@ -1,9 +1,7 @@
 import './css/styles.css';
 import fetchCountries from './js/fetchCountries.js';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-
-let debounce = require('lodash.debounce');
-
+import debounce from 'lodash.debounce';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -18,26 +16,30 @@ refs.inputEl.addEventListener('input', debounce(onSearch, DEBOUNCE_DELAY));
 
 function onSearch (event) {
     event.preventDefault();
-    const searchValue = refs.inputEl.value;
-    const searchValueTrim = searchValue.trim();
+    const searchValue = refs.inputEl.value.trim();
    
-    if (!searchValueTrim) {return console.log("введите данные")}
-    fetchCountries(searchValueTrim)
+    if (!searchValue) {return console.log("введите данные")}
+
+    fetchCountries(searchValue)
     .then((data) =>{
-        refs.ulEl.innerHTML='';
-        refs.boxEl.innerHTML='';
+        return renderCountries(data);       
+    } 
+    ).catch(error => Notify.failure("Oops, there is no country with that name" ));
+
+}
+
+function renderCountries(data) {
+    refs.ulEl.innerHTML='';
+    refs.boxEl.innerHTML='';
         if (data.length>= 10)
         {return Notify.info('Too many matches found. Please enter a more specific name.');
-    }
+        }
 
         if (data.length>1){
          return renderCountriesList(data);
         }
             
         renderCountryCard(data)
-    } 
-    ).catch(error => Notify.failure("Oops, there is no country with that name" ));
-
 }
 
 function renderCountriesList(data) {
@@ -45,12 +47,6 @@ function renderCountriesList(data) {
     refs.ulEl.insertAdjacentHTML('beforeend', list);    
 }
 
-function renderList (data) {
-    return `<li>
-                <img src = ${data.flags.svg} alt="flag ${data.name.official}" width="60">
-                <p>${data.name.official}</p> 
-        </li>`
-}
 
 function renderCountryCard(data) {
     const card = data.map(renderCard).join('');
@@ -58,14 +54,21 @@ function renderCountryCard(data) {
     
 }
 
-function renderCard(data) {
+function renderList({flags, name}) {
+    return `<li>
+                <img src = ${flags.svg} alt="flag ${name.official}" width="60">
+                <p>${name.official}</p> 
+        </li>`
+}
+
+function renderCard({name, capital, population, languages, flags}) {
     return `
-    <img src=${data.flags.svg} alt="flag ${data.name.official}" width="80">
-      <h1>${data.name.official}</h1>
+    <img src=${flags.svg} alt="flag ${name.official}" width="80">
+      <h1>${name.official}</h1>
       <ul>
-        <li>Capital: ${data.capital}</li>
-        <li>Population: ${data.population}</li>        
-        <li>Languages: ${Object.values(data.languages).map(x=>x).join(', ')}</li>
+        <li>Capital: ${capital}</li>
+        <li>Population: ${population}</li>        
+        <li>Languages: ${Object.values(languages).map(x=>x).join(', ')}</li>
       </ul>
     `
 }
