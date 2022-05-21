@@ -11,6 +11,11 @@ const refs = {
     boxEl: document.querySelector('.country-info'),
 }
 
+Notify.init({
+    width: '380px',
+    fontSize: '18px',
+});
+
 refs.inputEl.addEventListener('input', debounce(onSearch, DEBOUNCE_DELAY));
 
 
@@ -55,20 +60,21 @@ function renderCountryCard(data) {
 }
 
 function renderList({flags, name}) {
-    return `<li>
-                <img src = ${flags.svg} alt="flag ${name.official}" width="60">
+    return `<li class = "list-item">
+                <img src = ${flags.svg} alt="flag ${name.official}" width="60" height = '40'>
                 <p>${name.official}</p> 
         </li>`
 }
 
 function renderCard({name, capital, population, languages, flags}) {
     return `
-    <img src=${flags.svg} alt="flag ${name.official}" width="80">
-      <h1>${name.official}</h1>
+    <div class = "thumb">
+    <img src=${flags.svg} alt="flag ${name.official}" width="60" height='40'>
+    <h1>${name.official}</h1> </div>
       <ul>
-        <li>Capital: ${capital}</li>
-        <li>Population: ${population}</li>        
-        <li>Languages: ${Object.values(languages).map(x=>x).join(', ')}</li>
+        <li class = 'info_item'><span>Capital</span>: ${capital}</li>
+        <li class = 'info_item'><span>Population</span>: ${population}</li>        
+        <li class = 'info_item'><span>Languages</span>: ${Object.values(languages).map(x=>x).join(', ')}</li>
       </ul>
     `
 }
